@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 interface FormSelectProps {
   id: string;
   label: string;
@@ -7,6 +9,7 @@ interface FormSelectProps {
   options: { value: string; label: string }[];
   required?: boolean;
   placeholder?: string;
+  error?: string;
 }
 
 const FormSelect = ({
@@ -18,11 +21,15 @@ const FormSelect = ({
   options,
   required = false,
   placeholder = '선택해주세요',
+  error,
 }: FormSelectProps) => {
+  const errorId = useId();
+  const hasError = !!error;
+
   const selectStyle = {
     width: '100%',
     padding: '12px',
-    border: '2px solid #e0e0e0',
+    border: `2px solid ${hasError ? '#dc3545' : '#e0e0e0'}`,
     borderRadius: '6px',
     fontSize: '16px',
     boxSizing: 'border-box' as const,
@@ -30,12 +37,12 @@ const FormSelect = ({
   };
 
   const handleFocus = (e: React.FocusEvent<HTMLSelectElement>) => {
-    e.target.style.borderColor = '#4285f4';
-    e.target.style.outline = '2px solid rgba(66, 133, 244, 0.2)';
+    e.target.style.borderColor = hasError ? '#dc3545' : '#4285f4';
+    e.target.style.outline = `2px solid ${hasError ? 'rgba(220, 53, 69, 0.2)' : 'rgba(66, 133, 244, 0.2)'}`;
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLSelectElement>) => {
-    e.target.style.borderColor = '#e0e0e0';
+    e.target.style.borderColor = hasError ? '#dc3545' : '#e0e0e0';
     e.target.style.outline = 'none';
   };
 
@@ -61,6 +68,8 @@ const FormSelect = ({
         style={selectStyle}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        aria-invalid={hasError}
+        aria-describedby={hasError ? errorId : undefined}
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (
@@ -69,6 +78,20 @@ const FormSelect = ({
           </option>
         ))}
       </select>
+      {hasError && (
+        <div
+          id={errorId}
+          role="alert"
+          style={{
+            color: '#dc3545',
+            fontSize: '14px',
+            marginTop: '4px',
+            fontWeight: '500',
+          }}
+        >
+          {error}
+        </div>
+      )}
     </div>
   );
 };

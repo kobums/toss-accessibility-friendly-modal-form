@@ -4,6 +4,7 @@ interface ButtonProps {
   onClick?: () => void;
   children: React.ReactNode;
   disabled?: boolean;
+  loading?: boolean;
 }
 
 const Button = ({
@@ -12,20 +13,27 @@ const Button = ({
   onClick,
   children,
   disabled = false,
+  loading = false,
 }: ButtonProps) => {
+  const isDisabled = disabled || loading;
+
   const baseStyle = {
     padding: '12px 24px',
     borderRadius: '6px',
     fontSize: '16px',
-    cursor: disabled ? 'not-allowed' : 'pointer',
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
     fontWeight: '500',
     transition: 'all 0.2s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
   };
 
   const primaryStyle = {
     ...baseStyle,
     border: 'none',
-    backgroundColor: disabled ? '#ccc' : '#4285f4',
+    backgroundColor: isDisabled ? '#ccc' : '#4285f4',
     color: 'white',
   };
 
@@ -39,7 +47,7 @@ const Button = ({
   const style = variant === 'primary' ? primaryStyle : secondaryStyle;
 
   const handleMouseOver = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (disabled) return;
+    if (isDisabled) return;
 
     if (variant === 'primary') {
       (e.target as HTMLButtonElement).style.backgroundColor = '#3367d6';
@@ -49,7 +57,7 @@ const Button = ({
   };
 
   const handleMouseOut = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (disabled) return;
+    if (isDisabled) return;
 
     if (variant === 'primary') {
       (e.target as HTMLButtonElement).style.backgroundColor = '#4285f4';
@@ -62,11 +70,24 @@ const Button = ({
     <button
       type={type}
       onClick={onClick}
-      disabled={disabled}
+      disabled={isDisabled}
       style={style}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
+      aria-busy={loading}
     >
+      {loading && (
+        <span
+          style={{
+            width: '16px',
+            height: '16px',
+            border: '2px solid transparent',
+            borderTop: '2px solid currentColor',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+          }}
+        />
+      )}
       {children}
     </button>
   );

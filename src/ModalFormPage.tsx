@@ -11,6 +11,8 @@ const ModalFormPage = () => {
     experience: '',
     github: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const experienceOptions = [
     { value: '0', label: '0-3년' },
@@ -22,6 +24,7 @@ const ModalFormPage = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
   const modalTitleRef = useRef<HTMLHeadingElement>(null);
+  const errorAnnouncementRef = useRef<HTMLDivElement>(null);
   const modalTitleId = useId();
   const modalDescId = useId();
   const nameId = useId();
@@ -35,14 +38,94 @@ const ModalFormPage = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setErrors({});
+    setIsSubmitting(false);
     buttonRef.current?.focus();
+  };
+
+  const validateForm = (data: typeof formData) => {
+    const newErrors: Record<string, string> = {};
+
+    // 이름 검증
+    if (!data.name.trim()) {
+      newErrors.name = '이름을 입력해주세요.';
+    } else if (data.name.trim().length < 2) {
+      newErrors.name = '이름은 최소 2글자 이상 입력해주세요.';
+    }
+
+    // 이메일 검증
+    if (!data.email.trim()) {
+      newErrors.email = '이메일을 입력해주세요.';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(data.email)) {
+        newErrors.email = '올바른 이메일 형식을 입력해주세요.';
+      }
+    }
+
+    // 경력 검증
+    if (!data.experience) {
+      newErrors.experience = '경력 연차를 선택해주세요.';
+    }
+
+    // GitHub 링크 검증 (선택사항이지만 입력했을 경우)
+    if (data.github.trim()) {
+      const githubRegex = /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9-_]+\/?$/;
+      if (!githubRegex.test(data.github)) {
+        newErrors.github = '올바른 GitHub 링크 형식을 입력해주세요. (예: https://github.com/username)';
+      }
+    }
+
+    return newErrors;
+  };
+
+  const announceErrors = (errorMessages: string[]) => {
+    if (errorAnnouncementRef.current && errorMessages.length > 0) {
+      errorAnnouncementRef.current.textContent = `입력 오류가 있습니다. ${errorMessages.join(', ')}`;
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    const validationErrors = validateForm(formData);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      const errorMessages = Object.keys(validationErrors).map(key => validationErrors[key]);
+      announceErrors(errorMessages);
+
+      // 첫 번째 에러가 있는 필드로 포커스 이동
+      const firstErrorField = Object.keys(validationErrors)[0];
+      const fieldElement = document.getElementById(
+        firstErrorField === 'name' ? nameId :
+        firstErrorField === 'email' ? emailId :
+        firstErrorField === 'experience' ? experienceId :
+        githubId
+      );
+      fieldElement?.focus();
+
+      setIsSubmitting(false);
+      return;
+    }
+
+    // 유효성 검사 통과 시
+    setErrors({});
     console.log('Form submitted:', formData);
-    closeModal();
-    setFormData({ name: '', email: '', experience: '', github: '' });
+
+    // 성공 메시지 알림
+    if (errorAnnouncementRef.current) {
+      errorAnnouncementRef.current.textContent = '신청이 성공적으로 제출되었습니다.';
+    }
+
+    setTimeout(() => {
+      closeModal();
+      setFormData({ name: '', email: '', experience: '', github: '' });
+      setIsSubmitting(false);
+    }, 1000);
   };
 
   const handleInputChange = (
@@ -52,6 +135,15 @@ const ModalFormPage = () => {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // 입력 시 해당 필드의 에러 제거
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   useEffect(() => {
@@ -229,6 +321,20 @@ const ModalFormPage = () => {
               이메일과 FE 경력 연차 등 간단한 정보를 입력해주세요.
             </p>
 
+            {/* ARIA 라이브 영역 - 스크린리더 알림용 */}
+            <div
+              ref={errorAnnouncementRef}
+              aria-live="polite"
+              aria-atomic="true"
+              style={{
+                position: 'absolute',
+                left: '-10000px',
+                width: '1px',
+                height: '1px',
+                overflow: 'hidden',
+              }}
+            />
+
             <form onSubmit={handleSubmit}>
               <FormInput
                 ref={firstInputRef}
@@ -238,6 +344,7 @@ const ModalFormPage = () => {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
+                error={errors.name}
               />
 
               <FormInput
@@ -248,6 +355,7 @@ const ModalFormPage = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
+                error={errors.email}
               />
 
               <FormSelect
@@ -258,6 +366,7 @@ const ModalFormPage = () => {
                 onChange={handleInputChange}
                 options={experienceOptions}
                 required
+                error={errors.experience}
               />
 
               <FormInput
@@ -268,6 +377,7 @@ const ModalFormPage = () => {
                 value={formData.github}
                 onChange={handleInputChange}
                 placeholder="https://github.com/username"
+                error={errors.github}
               />
 
               <div
@@ -277,10 +387,10 @@ const ModalFormPage = () => {
                   justifyContent: 'flex-end',
                 }}
               >
-                <Button variant="secondary" onClick={closeModal}>
+                <Button variant="secondary" onClick={closeModal} disabled={isSubmitting}>
                   취소
                 </Button>
-                <Button type="submit" variant="primary">
+                <Button type="submit" variant="primary" loading={isSubmitting}>
                   제출하기
                 </Button>
               </div>
