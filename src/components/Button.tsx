@@ -86,6 +86,7 @@ const Button = ({
             borderRadius: '50%',
             animation: 'spin 1s linear infinite',
           }}
+          aria-label="로딩 중"
         />
       )}
       {children}
