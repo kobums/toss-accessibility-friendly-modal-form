@@ -1,4 +1,6 @@
 import { useId } from 'react';
+import { getFieldStyles, labelStyles, errorStyles, selectStyles } from '../styles/formStyles';
+import { createFocusHandler, createBlurHandler } from '../utils/fieldUtils';
 
 interface FormSelectProps {
   id: string;
@@ -26,37 +28,17 @@ const FormSelect = ({
   const errorId = useId();
   const hasError = !!error;
 
-  const selectStyle = {
-    width: '100%',
-    padding: '12px',
-    border: `2px solid ${hasError ? '#dc3545' : '#e0e0e0'}`,
-    borderRadius: '6px',
-    fontSize: '16px',
-    boxSizing: 'border-box' as const,
-    backgroundColor: 'white',
+  const combinedSelectStyle = {
+    ...getFieldStyles(hasError),
+    ...selectStyles,
   };
 
-  const handleFocus = (e: React.FocusEvent<HTMLSelectElement>) => {
-    e.target.style.borderColor = hasError ? '#dc3545' : '#4285f4';
-    e.target.style.outline = `2px solid ${hasError ? 'rgba(220, 53, 69, 0.2)' : 'rgba(66, 133, 244, 0.2)'}`;
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLSelectElement>) => {
-    e.target.style.borderColor = hasError ? '#dc3545' : '#e0e0e0';
-    e.target.style.outline = 'none';
-  };
+  const handleFocus = createFocusHandler(hasError);
+  const handleBlur = createBlurHandler(hasError);
 
   return (
     <div style={{ marginBottom: '24px' }}>
-      <label
-        htmlFor={id}
-        style={{
-          display: 'block',
-          marginBottom: '8px',
-          fontWeight: '500',
-          color: '#333',
-        }}
-      >
+      <label htmlFor={id} style={labelStyles}>
         {label} {required && '*'}
       </label>
       <select
@@ -65,7 +47,7 @@ const FormSelect = ({
         value={value}
         onChange={onChange}
         required={required}
-        style={selectStyle}
+        style={combinedSelectStyle}
         onFocus={handleFocus}
         onBlur={handleBlur}
         aria-invalid={hasError}
@@ -79,16 +61,7 @@ const FormSelect = ({
         ))}
       </select>
       {hasError && (
-        <div
-          id={errorId}
-          role="alert"
-          style={{
-            color: '#dc3545',
-            fontSize: '14px',
-            marginTop: '4px',
-            fontWeight: '500',
-          }}
-        >
+        <div id={errorId} role="alert" style={errorStyles}>
           {error}
         </div>
       )}
