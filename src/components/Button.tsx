@@ -1,3 +1,5 @@
+import { colors } from '../styles/formStyles';
+
 interface ButtonProps {
   type?: 'button' | 'submit';
   variant?: 'primary' | 'secondary';
@@ -33,15 +35,15 @@ const Button = ({
   const primaryStyle = {
     ...baseStyle,
     border: 'none',
-    backgroundColor: isDisabled ? '#ccc' : '#4285f4',
-    color: 'white',
+    backgroundColor: isDisabled ? colors.disabled : colors.primary,
+    color: colors.textOnPrimary,
   };
 
   const secondaryStyle = {
     ...baseStyle,
-    border: '2px solid #e0e0e0',
-    backgroundColor: 'white',
-    color: '#333',
+    border: `2px solid ${colors.border}`,
+    backgroundColor: colors.white,
+    color: colors.text,
   };
 
   const style = variant === 'primary' ? primaryStyle : secondaryStyle;
@@ -50,9 +52,9 @@ const Button = ({
     if (isDisabled) return;
 
     if (variant === 'primary') {
-      (e.target as HTMLButtonElement).style.backgroundColor = '#3367d6';
+      (e.target as HTMLButtonElement).style.backgroundColor = colors.primaryHover;
     } else {
-      (e.target as HTMLButtonElement).style.backgroundColor = '#f5f5f5';
+      (e.target as HTMLButtonElement).style.backgroundColor = colors.borderHover;
     }
   };
 
@@ -60,9 +62,9 @@ const Button = ({
     if (isDisabled) return;
 
     if (variant === 'primary') {
-      (e.target as HTMLButtonElement).style.backgroundColor = '#4285f4';
+      (e.target as HTMLButtonElement).style.backgroundColor = colors.primary;
     } else {
-      (e.target as HTMLButtonElement).style.backgroundColor = 'white';
+      (e.target as HTMLButtonElement).style.backgroundColor = colors.white;
     }
   };
 

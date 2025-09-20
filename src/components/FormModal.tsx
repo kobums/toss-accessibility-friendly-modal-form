@@ -4,6 +4,7 @@ import type { FormData } from './ModalContext';
 import FormInput from './FormInput';
 import FormSelect from './FormSelect';
 import Button from './Button';
+import { colors } from '../styles/formStyles';
 
 const FormModal = () => {
   const { isOpen, closeModal } = useModal();
@@ -220,7 +221,7 @@ const FormModal = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: colors.overlay,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -234,14 +235,14 @@ const FormModal = () => {
         aria-labelledby={modalTitleId}
         aria-describedby={modalDescId}
         style={{
-          backgroundColor: 'white',
+          backgroundColor: colors.white,
           borderRadius: '12px',
           padding: '32px',
           maxWidth: '500px',
           width: '90%',
           maxHeight: '90vh',
           overflow: 'auto',
-          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+          boxShadow: colors.shadowLarge,
           position: 'relative',
         }}
       >
@@ -261,7 +262,7 @@ const FormModal = () => {
               margin: 0,
               fontSize: '24px',
               fontWeight: '900',
-              color: '#333',
+              color: colors.text,
               outline: 'none',
             }}
           >
@@ -271,7 +272,7 @@ const FormModal = () => {
 
         <p
           id={modalDescId}
-          style={{ margin: '0 0 24px 0', color: '#666', fontSize: '14px' }}
+          style={{ margin: '0 0 24px 0', color: colors.textSecondary, fontSize: '14px' }}
         >
           이메일과 FE 경력 연차 등 간단한 정보를 입력해주세요.
         </p>

@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { ModalProvider } from './components/ModalContext';
 import { useFormModal } from './hooks/useFormModal';
 import FormModal from './components/FormModal';
+import { colors } from './styles/formStyles';
 
 const ModalFormContent = () => {
   const { openFormModal } = useFormModal();
@@ -33,7 +34,7 @@ const ModalFormContent = () => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: colors.background,
       }}
     >
       <button
@@ -41,8 +42,8 @@ const ModalFormContent = () => {
         type="button"
         onClick={handleOpenModal}
         style={{
-          background: 'linear-gradient(135deg, #4285f4 0%, #343ea8ff 100%)',
-          color: 'white',
+          background: colors.primaryGradient,
+          color: colors.textOnPrimary,
           border: 'none',
           borderRadius: '8px',
           padding: '16px 24px',
@@ -52,24 +53,20 @@ const ModalFormContent = () => {
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          boxShadow: '0 2px 8px rgba(66, 133, 244, 0.3)',
+          boxShadow: colors.shadow,
           transition: 'all 0.2s ease',
         }}
         onMouseOver={(e) => {
-          (e.target as HTMLButtonElement).style.background =
-            'linear-gradient(135deg, #3367d6 0%, #2d3190 100%)';
+          (e.target as HTMLButtonElement).style.background = colors.primaryGradientHover;
         }}
         onMouseOut={(e) => {
-          (e.target as HTMLButtonElement).style.background =
-            'linear-gradient(135deg, #4285f4 0%, #343ea8ff 100%)';
+          (e.target as HTMLButtonElement).style.background = colors.primaryGradient;
         }}
         onFocus={(e) => {
-          (e.target as HTMLButtonElement).style.background =
-            'linear-gradient(135deg, #3367d6 0%, #2d3190 100%)';
+          (e.target as HTMLButtonElement).style.background = colors.primaryGradientHover;
         }}
         onBlur={(e) => {
-          (e.target as HTMLButtonElement).style.background =
-            'linear-gradient(135deg, #4285f4 0%, #343ea8ff 100%)';
+          (e.target as HTMLButtonElement).style.background = colors.primaryGradient;
         }}
         aria-label="신청 폼 작성하기 모달 열기"
       >
