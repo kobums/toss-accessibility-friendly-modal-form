@@ -226,7 +226,6 @@ const FormModal = () => {
         alignItems: 'center',
         zIndex: 1000,
       }}
-      aria-hidden="true"
     >
       <div
         ref={modalRef}
